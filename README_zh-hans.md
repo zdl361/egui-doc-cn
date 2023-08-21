@@ -35,7 +35,10 @@ egui 可以在任何可以绘制纹理三角形（*textured triangles*）的地�
 
 ## 示例
 原手册中的代码没头没尾，极难看懂。这里给出完整的hello_world，并且解决中文字体问题。推荐使用微软编译器stable-msvc工具链，如使用gnu工具链可能遇到输入法bug，无法唤出输入法。
-
+包含鸿蒙字体文件的完整的hello_word可从[此处](https://github.com/zdl361/egui-hello_word_cn)下载。
+```bash
+git clone https://github.com/zdl361/egui-hello_word_cn.git
+```
 *cargo.toml*
 ```cargo
 [package]
@@ -137,12 +140,10 @@ pub fn load_harmony_os_font(ctx: &egui::Context){
 
 [示例目录](https://github.com/emilk/egui/blob/master/examples/)（`examples/`）中有一些简单的示例。如果你想写一个 Web App，请按照 <https://github.com/emilk/eframe_template/>的说明操作。
 
-官方文档位于 <https://docs.rs/egui>。要获得更多灵感或示例，请查看 [egui web 样例](https://www.egui.rs/#demo) 并按照其中的链接访问源代码。
+官方文档位于 <https://docs.rs/egui>。要获得更多示例，请查看 [egui web 样例](https://www.egui.rs/#demo) 并按照其中的链接访问源代码。
 
 如果你想要将egui集成到现有的引擎中，请前往 [集成](#集成) 一节。
-
 如果有疑问，请访问 [GitHub Discussions](https://github.com/emilk/egui/discussions) 或 [egui 的 discord 服务器](https://discord.gg/JFcEma9bJq)。
-
 如果你想为egui做贡献，请阅读 [Contributing Guidelines](https://github.com/emilk/egui/blob/master/CONTRIBUTING.md).
 
 ## 样例
@@ -165,11 +166,11 @@ pub fn load_harmony_os_font(ctx: &egui::Context){
 
 * 最易用的 GUI 库
 * 灵敏：在 debug build 中达到 60 Hz
-* 友好：难以发生编码错误，不应该发生 panic
-* 可移植：同样的代码可以跨平台使用
+* 友好：难以发生编码错误，几乎不发生 panic
+* 可移植：代码可以跨平台使用
 * 轻松集成到任意环境中
-* 用于自定义绘制的简单 2D 图形 API（[`epaint`](https://docs.rs/epaint)）.
-* 没有回调
+* 自行绘制简单2D图形API（[`epaint`](https://docs.rs/epaint)）.
+* 没有回调函数
 * 纯即时模式
 * 可扩展：[轻松为 egui 编写自己的 widgets](https://github.com/emilk/egui/blob/master/crates/egui_demo_lib/src/demo/toggle_switch.rs)
 * 模块化：你可以使用 egui 中的一小部分，并用新的方式将它们组合起来
@@ -188,7 +189,7 @@ egui *不是*框架。egui 是供调用的库，而不是供编程的环境。
 
 ## egui 是为谁设计的？
 
-egui 旨在成为想要以最简单的方式创建 GUI 或想要在游戏引擎中添加 GUI 的人的最佳选择。
+egui旨在成为想要以最简单的方式创建 GUI 或想要在游戏引擎中添加 GUI 的人的最佳选择。
 
 
 如果你不用 Rust，egui 不适合你。如果你想要一个看起来原生的 GUI，egui 不适合你。如果你想要升级时不会破坏已有项目，egui 暂时不适合你。
@@ -197,7 +198,7 @@ egui 旨在成为想要以最简单的方式创建 GUI 或想要在游戏引擎�
 
 ### egui vs Dear ImGui
 
-egui 的明显替代方案是 [`imgui-rs`](https://github.com/Gekkio/imgui-rs)，C++ 库 [Dear ImGui](https://github.com/ocornut/imgui) 的 Rust 封装。Dear ImGui 是一个很棒的库（也是 egui 的灵感来源），它有更多特性和打磨（*polish*）不过，egui为Rust用户提供了一些好处：
+egui 的明显替代方案是 [`imgui-rs`](https://github.com/Gekkio/imgui-rs)，C++ 库 [Dear ImGui](https://github.com/ocornut/imgui) 的 Rust 封装。Dear ImGui 是一个很棒的库（也是 egui 的灵感来源），它有更多特性不过，egui为Rust用户提供了一些好处：
 
 * egui 是纯 Rust 编写的
 * egui 可以很方便的编译为 WASM
@@ -386,7 +387,7 @@ loop {
 
 
 #### IDs
-在一些 GUI 状态中，如果希望 GUI 库保留，或是在一个即时模式库如`egui`中。那么就需要知道窗口的位置和大小，以及在某些界面中滚动了多远。这种情况下，需要为`egui`提供唯一标识符的种子（在主 UI 中是唯一的）。例如在默认情况下，`egui`使用窗口标题作为唯一的 IDs 来存储窗口位置。如果你想要两个具有相同名称的窗口（或一个具有动态名称的窗口），你必须向`egui`提供其他的 IDs 来源（由独特的整数或字符串构成）。
+在一些 GUI 状态中，如果希望 GUI 库保留，或是在一个即时模式库如`egui`中。那么就需要知道窗口的位置和大小，以及在某些界面中滚动了多远。这种情况下，需要为`egui`提供唯一标识符（在主 UI 中是唯一的）。例如在默认情况下，`egui`使用窗口标题作为唯一的 IDs 来存储窗口位置。如果你想要两个具有相同名称的窗口（或一个具有动态名称的窗口），你必须向`egui`提供其他的 IDs 来源（由独特的整数或字符串构成）。
 
 `egui`需要跟踪哪个部件被交互（例如哪个滑块被拖动）。`egui`也使用唯一的 IDs，但在上述情况下，IDs 是自动生成的，所以不需担心这个问题。对于两个名字相同的按钮也没有问题（拓展 [`Dear ImGui`](https://github.com/ocornut/imgui)).
 
