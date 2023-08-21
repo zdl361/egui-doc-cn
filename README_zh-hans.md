@@ -35,6 +35,7 @@ egui 可以在任何可以绘制纹理三角形（*textured triangles*）的地�
 
 ## 示例
 原手册中的代码没头没尾，极难看懂。这里给出完整的hello_word，并且解决中文字体问题。推荐使用微软编译器stable-msvc工具链，如使用gnu工具链可能遇到输入法bug，无法唤出输入法。
+
 *cargo.toml*
 ```cargo
 [package]
