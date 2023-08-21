@@ -34,7 +34,7 @@ egui 可以在任何可以绘制纹理三角形（*textured triangles*）的地�
 （[egui原始项目地址](https://github.com/emilk/egui)）
 
 ## 示例
-原手册中的代码没头没尾，极难看懂。这里给出完整的hello_word，并且解决中文字体问题。推荐使用微软编译器stable-msvc工具链，如使用gnu工具链可能遇到输入法bug，无法唤出输入法。
+原手册中的代码没头没尾，极难看懂。这里给出完整的hello_world，并且解决中文字体问题。推荐使用微软编译器stable-msvc工具链，如使用gnu工具链可能遇到输入法bug，无法唤出输入法。
 
 *cargo.toml*
 ```cargo
@@ -85,9 +85,10 @@ impl Default for MyApp {
 }
 impl MyApp{
 	fn new(cc: &eframe::CreationContext<'_>) -> Self {
-		load_harmony_os_font(& cc.egui_ctx); //egui默认字体无法显示中文，下文解决。记住配置字体应该在构造函数中。网上部分教程将字体配置写入了update函数，update函数每一帧都会运行一次，每秒60次，因此在update函数中加载字体是错误且低效的。
+		load_harmony_os_font(& cc.egui_ctx); //egui默认字体无法显示中文，需要加载中文字体。配置字体应该在构造函数中。网上部分教程将字体配置写入了update函数，update函数每一帧都会运行一次，每秒60次，因此在update函数中加载字体是错误且低效的。
         Self::default()
     }
+}
 
 impl eframe::App for MyApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
@@ -127,7 +128,7 @@ pub fn load_harmony_os_font(ctx: &egui::Context){
 }
 ```
 
-<img src="media/demo.gif">
+<img src="media/hello_world.gif">
 
 
 ## 快速上手
