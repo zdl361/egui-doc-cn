@@ -11,9 +11,9 @@
 
 👉 [点此运行 Web 样例](https://www.egui.rs/#demo) 👈
 
-egui （读作“e-gooey”） 是一个简单、快速、可移植性强的 Rust 即时模式 GUI 库。egui 可运行于 Web, 原生（*Native*） 甚至 [你喜欢的的游戏引擎](#integrations) （很快到来）。
+egui （读作“e-gooey”） 是一个简单、快速、可移植性强的 Rust 即时模式 GUI 库。egui 可利用WASM技术运行于Web浏览器内, 也可以像普通程序一样运行在原生平台（*Native*）， 甚至 [你喜欢的游戏引擎](#integrations) 。
 
-egui 旨在成为最易用的 Rust GUI 库，用最简单的方式创建Web应用程序。
+egui 旨在成为最易用的 Rust GUI 库，用最简单的方式创建原生或Web应用程序。
 
 egui 可以在任何可以绘制纹理三角形（*textured triangles*）的地方使用，这意味着你可以轻松地地将它集成到你选择的游戏引擎中。
 
@@ -34,21 +34,100 @@ egui 可以在任何可以绘制纹理三角形（*textured triangles*）的地�
 （[egui原始项目地址](https://github.com/emilk/egui)）
 
 ## 示例
+原手册中的代码没头没尾，极难看懂。这里给出完整的hello_word，并且解决中文字体问题。推荐使用微软编译器stable-msvc工具链，如使用gnu工具链可能遇到输入法bug，无法唤出输入法。
+*cargo.toml*
+```cargo
+[package]
+name = "hello_world"
+version = "0.1.0"
+authors = ["rust"]
+license = "MIT OR Apache-2.0"
+edition = "2021"
+rust-version = "1.71.1"
 
+[dependencies]
+eframe = { package = "eframe", version= "0.22.0", features = [
+    "__screenshot", # __screenshot is so we can dump a screenshot using EFRAME_SCREENSHOT_TO
+] } #不要疑惑，eframe包负责调用egui，他对egui进行了重新导出
+env_logger = "0.10"
+```
+*rust code*
 ``` rust
-ui.heading("My egui Application");
-ui.horizontal(|ui| {
-    ui.label("Your name: ");
-    ui.text_edit_singleline(&mut name);
-});
-ui.add(egui::Slider::new(&mut age, 0..=120).text("age"));
-if ui.button("Click each year").clicked() {
-    age += 1;
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")] // windows_subsystem 告诉编译器，程序运行时隐藏命令行窗口。
+
+use eframe::egui;
+fn main() -> Result<(), eframe::Error> {
+    env_logger::init(); // Log to stderr (if you run with `RUST_LOG=debug`).
+    let options = eframe::NativeOptions {
+        initial_window_size: Some(egui::vec2(320.0, 340.0)), //初始化窗体size
+        ..Default::default()
+    };
+    eframe::run_native(
+        "Hello word", //应用程序名称
+        options,
+        Box::new(|_cc| Box::<MyApp>::new(MyApp::new(_cc))), //第三个参数为程序构建器(eframe::AppCreator类型)负责创建应用程序上下文(egui::Context)。_cc为&CreationContextl类型，_cc.egui_ctx字段即为Context。
+//之所以强调Context的创建过程，是因为显示中文字体需要配置Context。
+    )
 }
-ui.label(format!("Hello '{name}', age {age}"));
+
+struct MyApp {
+    name: String,
+    age: u32,
+}
+impl Default for MyApp {
+    fn default() -> Self {
+        Self {
+            name: "Arthur".to_owned(),
+            age: 42,
+        }
+    }
+}
+impl MyApp{
+	fn new(cc: &eframe::CreationContext<'_>) -> Self {
+		load_harmony_os_font(& cc.egui_ctx); //egui默认字体无法显示中文，下文解决。记住配置字体应该在构造函数中。网上部分教程将字体配置写入了update函数，update函数每一帧都会运行一次，每秒60次，因此在update函数中加载字体是错误且低效的。
+        Self::default()
+    }
+
+impl eframe::App for MyApp {
+    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        egui::CentralPanel::default().show(ctx, |ui| {
+            ui.heading("My egui Application");
+            ui.horizontal(|ui| {
+                let name_label = ui.label("Your name: ");
+                ui.text_edit_singleline(&mut self.name)
+                    .labelled_by(name_label.id);
+            });
+            ui.add(egui::Slider::new(&mut self.age, 0..=120).text("age"));
+            if ui.button("Click each year").clicked() {
+                self.age += 1;
+            }
+            ui.label(format!("Hello '{}', age {}", self.name, self.age));
+        });
+    }
+}
+
+// 为了支持中文，我们加载部分鸿蒙字体：下载自https://developer.harmonyos.com/cn/design/resource
+//将字体文件放置在src目录同级别的resources目录下
+pub fn load_harmony_os_font(ctx: &egui::Context){
+    let mut fonts = eframe::egui::FontDefinitions::default();
+    fonts.font_data.insert("HarmonyOS_Sans".to_owned(),
+                           eframe::egui::FontData::from_static(include_bytes!("../resources/HarmonyOS_Sans_Regular.ttf"))); // .ttf and .otf supported
+    fonts.font_data.insert("HarmonyOS_Sans_SC".to_owned(),
+                           eframe::egui::FontData::from_static(include_bytes!("../resources/HarmonyOS_Sans_SC_Regular.ttf"))); 
+	fonts.font_data.insert("HarmonyOS_Sans_TC".to_owned(),
+                           eframe::egui::FontData::from_static(include_bytes!("../resources/HarmonyOS_Sans_TC_Regular.ttf"))); 
+    fonts.families.get_mut(&eframe::egui::FontFamily::Proportional).unwrap()
+        .insert(0, "HarmonyOS_Sans_TC".to_owned());
+	fonts.families.get_mut(&eframe::egui::FontFamily::Proportional).unwrap()
+        .insert(0, "HarmonyOS_Sans_SC".to_owned());
+    fonts.families.get_mut(&eframe::egui::FontFamily::Proportional).unwrap()
+        .insert(0, "HarmonyOS_Sans".to_owned());
+    ctx.set_fonts(fonts);
+}
 ```
 
 <img src="media/demo.gif">
+
 
 ## 快速上手
 
@@ -106,6 +185,7 @@ egui *不是*框架。egui 是供调用的库，而不是供编程的环境。
 ## egui 是为谁设计的？
 
 egui 旨在成为想要以最简单的方式创建 GUI 或想要在游戏引擎中添加 GUI 的人的最佳选择。
+
 
 如果你不用 Rust，egui 不适合你。如果你想要一个看起来原生的 GUI，egui 不适合你。如果你想要升级时不会破坏已有项目，egui 暂时不适合你。
 
