@@ -66,7 +66,8 @@ fn main() -> Result<(), eframe::Error> {
     eframe::run_native(
         "Hello word", //应用程序名称
         options,
-        Box::new(|_cc| Box::<MyApp>::new(MyApp::new(_cc))), //第三个参数为程序构建器(eframe::AppCreator类型)负责创建应用程序上下文(egui::Context)。_cc为&CreationContextl类型，_cc.egui_ctx字段即为Context。
+        Box::new(|_cc| Box::<MyApp>::new(MyApp::new(_cc))), //第三个参数为程序构建器(eframe::AppCreator类型)负责创建应用程序上下文(egui::Context)。
+//_cc为&CreationContextl类型，_cc.egui_ctx字段即为Context。
 //之所以强调Context的创建过程，是因为显示中文字体需要配置Context。
     )
 }
@@ -85,7 +86,8 @@ impl Default for MyApp {
 }
 impl MyApp{
 	fn new(cc: &eframe::CreationContext<'_>) -> Self {
-		load_harmony_os_font(& cc.egui_ctx); //egui默认字体无法显示中文，需要加载中文字体。配置字体应该在构造函数中。网上部分教程将字体配置写入了update函数，update函数每一帧都会运行一次，每秒60次，因此在update函数中加载字体是错误且低效的。
+		load_harmony_os_font(& cc.egui_ctx); //egui默认字体无法显示中文，需要加载中文字体。配置字体应该在构造函数中。
+//网上部分教程将字体配置写入了update函数，update函数每一帧都会运行一次，每秒60次，因此在update函数中加载字体是错误且低效的。
         Self::default()
     }
 }
